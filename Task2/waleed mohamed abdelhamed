@@ -1,0 +1,54 @@
+waleed mohamed  mohamed abdelhamed hamed  (الاسم)
+from itertools import permutations
+# البيانات
+conflicts = [
+    {"sub_id": 109, "conflict_sub_id": 100, "num_of_intersection": 15},
+    {"sub_id": 200, "conflict_sub_id": 100, "num_of_intersection": 10},
+]
+
+levels = {
+    1: [100, 101, 102, 103, 104, 105],
+    2: [200, 201, 202, 203, 204, 205],
+    3: [300, 301, 302, 303, 304, 305],
+}
+
+# حساب تكلفة التداخل
+def calculate_cost(schedule, conflicts):
+    cost = 0
+    for conflict in conflicts:
+        for i in range(len(schedule) - 1):
+            if schedule[i] == conflict["sub_id"] and schedule[i + 1] == conflict["conflict_sub_id"]:
+                cost += conflict["num_of_intersection"]
+    return cost
+
+# إنشاء الأنماط الممكنة
+patterns = list(permutations([1, 2, 3]))
+
+# توزيع المقررات حسب النمط
+def generate_schedule(pattern, levels):
+    schedule = []
+    level_courses = {level: levels[level] for level in pattern}
+    max_courses = len(level_courses[pattern[0]])
+    for i in range(max_courses):
+        for level in pattern:
+            if i < len(level_courses[level]):
+                schedule.append(level_courses[level][i])
+    return schedule
+
+# البحث عن ايجاد افض ترتيب اقل تكلفه
+def find_optimal_schedule(patterns, levels, conflicts):
+    min_cost = float('inf')
+    best_schedule = []
+    for pattern in patterns:
+        schedule = generate_schedule(pattern, levels)
+        cost = calculate_cost(schedule, conflicts)
+        if cost < min_cost:
+            min_cost = cost
+            best_schedule = schedule
+    return best_schedule, min_cost
+
+# execution
+optimal_schedule, final_cost = find_optimal_schedule(patterns, levels, conflicts)
+
+print("أفضل ترتيب:", optimal_schedule)
+print("التكلفة النهائية:", final_cost)
